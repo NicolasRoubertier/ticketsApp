@@ -15,46 +15,46 @@ private let rectoVerso : [String : String] = ["semiFinalTicketFront20.png" : "se
 private let tickets : [String] = ["semiFinalTicketFront20.png", "semiFinalTicketFront21.png"]
 
 enum TicketState : Int {
-    case Normal = 0
-    case Selected = 1
-    case Collapsed = 2
+    case normal = 0
+    case selected = 1
+    case collapsed = 2
 }
 
 enum TicketFace : Int {
-    case Front = 0
-    case Back = 1
+    case front = 0
+    case back = 1
 }
 
 extension TicketStackController : PassbookLayoutDelegate {
     
-    func collectionView(collectionView: UICollectionView, heightOfCellAtIndexPath indexPath:NSIndexPath) -> CGFloat {
+    func collectionView(_ collectionView: UICollectionView, heightOfCellAtIndexPath indexPath:IndexPath) -> CGFloat {
         let image : UIImage = UIImage(named: tickets[indexPath.row])!
         let sizeRate : CGFloat = CGFloat(image.size.width/(self.collectionView!.frame.size.width*0.96))
         return CGFloat((image.size.height)/sizeRate)
     }
     
-    func widthOfTicketsOfCollectionView(collectionView: UICollectionView) -> CGFloat {
+    func widthOfTicketsOfCollectionView(_ collectionView: UICollectionView) -> CGFloat {
         return CGFloat(self.collectionView!.frame.size.width*0.96)
     }
     
-    func xOffsetOfTicketsOfCollectionView(collectionView: UICollectionView) -> CGFloat {
+    func xOffsetOfTicketsOfCollectionView(_ collectionView: UICollectionView) -> CGFloat {
         return CGFloat(self.collectionView!.frame.size.width*0.02)
     }
     
-    func getScrollOffset(collectionView: UICollectionView) -> CGPoint {
+    func getScrollOffset(_ collectionView: UICollectionView) -> CGPoint {
         return self.offset
     }
     
-    func getSelectedCellCollectionView(collectionView: UICollectionView) -> Int {
+    func getSelectedCellCollectionView(_ collectionView: UICollectionView) -> Int {
         return selectedCell
     }
 }
 
 class TicketStackController: UICollectionViewController {
     
-    private var selectedCell : Int = -1
+    fileprivate var selectedCell : Int = -1
 
-    private var offset : CGPoint!
+    fileprivate var offset : CGPoint!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -102,35 +102,35 @@ class TicketStackController: UICollectionViewController {
 
     // MARK: UICollectionViewDataSource
 
-    override func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+    override func numberOfSections(in collectionView: UICollectionView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return 1
     }
 
 
-    override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
         return tickets.count 
     }
 
-    override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as! TicketStackCell
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! TicketStackCell
         
         
         cell.imageContainer.backgroundColor = UIColor(white: 1, alpha: 0.0)
         
         cell.frontImageView = UIImageView(frame: CGRect(x: cell.imageContainer.frame.origin.x, y: cell.imageContainer.frame.origin.y, width: cell.frame.size.width, height: cell.frame.size.height))
         cell.frontImageView.image = UIImage(named: tickets[indexPath.row])!
-        cell.frontImageView.contentMode = UIViewContentMode.ScaleAspectFit
+        cell.frontImageView.contentMode = UIViewContentMode.scaleAspectFit
         
         cell.backImageView = UIImageView(frame: CGRect(x: cell.imageContainer.frame.origin.x, y: cell.imageContainer.frame.origin.y, width: cell.frame.size.width, height: cell.frame.size.height))
         cell.backImageView.image = UIImage(named: rectoVerso[tickets[indexPath.row]]!)!
-        cell.backImageView.contentMode = UIViewContentMode.ScaleAspectFit
+        cell.backImageView.contentMode = UIViewContentMode.scaleAspectFit
         
         cell.imageContainer.addSubview(cell.frontImageView)
         
-        cell.state = TicketState.Normal.rawValue
-        cell.face = TicketFace.Front.rawValue
+        cell.state = TicketState.normal.rawValue
+        cell.face = TicketFace.front.rawValue
     
         return cell
     }
@@ -138,33 +138,33 @@ class TicketStackController: UICollectionViewController {
     func setSelectedCell() {
         
         selectedCell = -1
-        let items : Int = self.collectionView!.numberOfItemsInSection(0)
+        let items : Int = self.collectionView!.numberOfItems(inSection: 0)
         for item in 0..<items {
-            if let cell = self.collectionView!.cellForItemAtIndexPath(NSIndexPath(forItem: item, inSection: 0)) as? TicketStackCell {
-                if cell.state == TicketState.Selected.rawValue {
+            if let cell = self.collectionView!.cellForItem(at: IndexPath(item: item, section: 0)) as? TicketStackCell {
+                if cell.state == TicketState.selected.rawValue {
                     selectedCell = item
                 }
             }
         }
     }
     
-    func selectTicket(sender: UITapGestureRecognizer) {
+    func selectTicket(_ sender: UITapGestureRecognizer) {
         
         if offset == nil {
             offset = (self.collectionView?.contentOffset)!
         }
-        let tappedPoint : CGPoint = sender.locationOfTouch(0, inView: self.collectionView)
+        let tappedPoint : CGPoint = sender.location(ofTouch: 0, in: self.collectionView)
         if selectedCell == -1 {
           if(tappedPoint.x >= self.collectionView!.frame.size.width*0.02 && tappedPoint.x <= self.collectionView!.frame.size.width*0.98) {
               let numberOfGaps : Int = min(Int(floor((tappedPoint.y)/57.1)), tickets.count-1)
-              let items : Int = self.collectionView!.numberOfItemsInSection(0)
+              let items : Int = self.collectionView!.numberOfItems(inSection: 0)
               for item in 0..<items {
-                  if let cell = self.collectionView!.cellForItemAtIndexPath(NSIndexPath(forItem: item, inSection: 0)) as? TicketStackCell {
+                  if let cell = self.collectionView!.cellForItem(at: IndexPath(item: item, section: 0)) as? TicketStackCell {
                       if item == numberOfGaps {
-                          cell.state = TicketState.Selected.rawValue
+                          cell.state = TicketState.selected.rawValue
                       }
                       else {
-                          cell.state = TicketState.Collapsed.rawValue
+                          cell.state = TicketState.collapsed.rawValue
                       }
                   }
               }
@@ -176,20 +176,20 @@ class TicketStackController: UICollectionViewController {
           }
         }
         else {
-            let items : Int = self.collectionView!.numberOfItemsInSection(0)
-            if let mainCell = self.collectionView!.cellForItemAtIndexPath(NSIndexPath(forItem: selectedCell, inSection: 0)) as? TicketStackCell {
+            let items : Int = self.collectionView!.numberOfItems(inSection: 0)
+            if let mainCell = self.collectionView!.cellForItem(at: IndexPath(item: selectedCell, section: 0)) as? TicketStackCell {
                 let height = mainCell.imageContainer.frame.height
                 if(tappedPoint.x >= self.collectionView!.frame.size.width*0.02 && tappedPoint.x <= self.collectionView!.frame.size.width*0.98 && tappedPoint.y<=height) {
                     turnTicket()
                 }
                 else {
                     for item in 0..<items {
-                        if let cell = self.collectionView!.cellForItemAtIndexPath(NSIndexPath(forItem: item, inSection: 0)) as? TicketStackCell {
-                            cell.state = TicketState.Normal.rawValue
+                        if let cell = self.collectionView!.cellForItem(at: IndexPath(item: item, section: 0)) as? TicketStackCell {
+                            cell.state = TicketState.normal.rawValue
                             if item == selectedCell {
-                                if cell.face == TicketFace.Back.rawValue {
-                                    UIView.transitionFromView(cell.backImageView, toView: cell.frontImageView, duration: 0.5, options: UIViewAnimationOptions.TransitionFlipFromLeft, completion: nil)
-                                    cell.face = TicketFace.Front.rawValue
+                                if cell.face == TicketFace.back.rawValue {
+                                    UIView.transition(from: cell.backImageView, to: cell.frontImageView, duration: 0.5, options: UIViewAnimationOptions.transitionFlipFromLeft, completion: nil)
+                                    cell.face = TicketFace.front.rawValue
                                 }
                             }
                         }
@@ -205,16 +205,16 @@ class TicketStackController: UICollectionViewController {
     }
     
     func turnTicket() {
-        if let mainCell = self.collectionView!.cellForItemAtIndexPath(NSIndexPath(forItem: selectedCell, inSection: 0)) as? TicketStackCell {
+        if let mainCell = self.collectionView!.cellForItem(at: IndexPath(item: selectedCell, section: 0)) as? TicketStackCell {
             
-                if mainCell.face == TicketFace.Front.rawValue {
-                    UIView.transitionFromView(mainCell.frontImageView, toView: mainCell.backImageView, duration: 1, options: UIViewAnimationOptions.TransitionFlipFromRight, completion: nil)
-                    mainCell.face = TicketFace.Back.rawValue
+                if mainCell.face == TicketFace.front.rawValue {
+                    UIView.transition(from: mainCell.frontImageView, to: mainCell.backImageView, duration: 1, options: UIViewAnimationOptions.transitionFlipFromRight, completion: nil)
+                    mainCell.face = TicketFace.back.rawValue
                     
                 }
                 else {
-                    UIView.transitionFromView(mainCell.backImageView, toView: mainCell.frontImageView, duration: 1, options: UIViewAnimationOptions.TransitionFlipFromLeft, completion: nil)
-                    mainCell.face = TicketFace.Front.rawValue
+                    UIView.transition(from: mainCell.backImageView, to: mainCell.frontImageView, duration: 1, options: UIViewAnimationOptions.transitionFlipFromLeft, completion: nil)
+                    mainCell.face = TicketFace.front.rawValue
                 }
         }
         

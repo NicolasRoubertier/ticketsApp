@@ -14,11 +14,11 @@ class TicketStackCollapsedLayout: UICollectionViewLayout {
     var collapsedCellPadding : CGFloat = 15.0
     var gapPadding : CGFloat = 30.0
     
-    private var cache = [UICollectionViewLayoutAttributes]()
-    private var contentHeight : CGFloat = 0.0
-    private var contentWidth : CGFloat = 0.0
+    fileprivate var cache = [UICollectionViewLayoutAttributes]()
+    fileprivate var contentHeight : CGFloat = 0.0
+    fileprivate var contentWidth : CGFloat = 0.0
     
-    override func prepareLayout() {
+    override func prepare() {
         
         
         if cache.isEmpty {
@@ -26,25 +26,25 @@ class TicketStackCollapsedLayout: UICollectionViewLayout {
             let xOffset = delegate.xOffsetOfTicketsOfCollectionView(collectionView!)
             var numberOfCollapsedCells : Int = 0
             
-            for item in 0 ..< collectionView!.numberOfItemsInSection(0) {
-                    let indexPath = NSIndexPath(forItem: item, inSection: 0)
+            for item in 0 ..< collectionView!.numberOfItems(inSection: 0) {
+                    let indexPath = IndexPath(item: item, section: 0)
                     let ticketHeight = delegate.collectionView(collectionView!, heightOfCellAtIndexPath: indexPath)
                     let ticketWidth = delegate.widthOfTicketsOfCollectionView(collectionView!)
                     
                     if item == delegate.getSelectedCellCollectionView(collectionView!) {
                         let frame = CGRect(x: xOffset, y: 0, width: ticketWidth, height: ticketHeight)
                         contentHeight += ticketHeight + gapPadding
-                        let attributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
+                        let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
                         attributes.frame = frame
                         cache.append(attributes)
                     }
                     else {
                         let frame = CGRect(x: xOffset, y: CGFloat(ticketHeight+gapPadding+(CGFloat(numberOfCollapsedCells)*collapsedCellPadding)), width: ticketWidth, height: ticketHeight)
                         numberOfCollapsedCells += 1
-                        let attributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
+                        let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
                         attributes.frame = frame
                         cache.append(attributes)
-                        if numberOfCollapsedCells == collectionView!.numberOfItemsInSection(0) - 2 {
+                        if numberOfCollapsedCells == collectionView!.numberOfItems(inSection: 0) - 2 {
                             contentHeight += ticketHeight
                         }
                         else {
@@ -56,19 +56,19 @@ class TicketStackCollapsedLayout: UICollectionViewLayout {
         }
     }
     
-    override func collectionViewContentSize() -> CGSize {
+    override var collectionViewContentSize : CGSize {
         return CGSize(width: contentWidth, height: contentHeight)
     }
     
-    override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
+    override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         return cache[indexPath.item]
     }
 
-    override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+    override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         var layoutAttributes = [UICollectionViewLayoutAttributes]()
         
         for attributes in cache {
-            if CGRectIntersectsRect(attributes.frame, rect) {
+            if attributes.frame.intersects(rect) {
                 layoutAttributes.append(attributes)
             }
             else {
@@ -78,7 +78,7 @@ class TicketStackCollapsedLayout: UICollectionViewLayout {
         return layoutAttributes
     }
     
-    override func targetContentOffsetForProposedContentOffset(proposedContentOffset: CGPoint) -> CGPoint {
+    override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
         return delegate.getScrollOffset(collectionView!)
     }
 }

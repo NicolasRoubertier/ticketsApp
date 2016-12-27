@@ -22,36 +22,36 @@ extension LockedTicketsCollectionViewController : ControllerDismissalDelegate {
 }
 
 extension LockedTicketsCollectionViewController : LockedTicketsLayoutDelegate {
-    func collectionView(collectionView: UICollectionView, heightOfCellAtIndexPath indexPath:NSIndexPath) -> CGFloat {
+    func collectionView(_ collectionView: UICollectionView, heightOfCellAtIndexPath indexPath:IndexPath) -> CGFloat {
         let image = UIImage(named: data[currentEvent]![indexPath.row])!
         let sizeRate : CGFloat = CGFloat(image.size.width/(self.collectionView!.frame.size.width))
         return CGFloat((image.size.height)/sizeRate)
     }
     
-    func widthOfTicketsOfCollectionView(collectionView: UICollectionView) -> CGFloat {
+    func widthOfTicketsOfCollectionView(_ collectionView: UICollectionView) -> CGFloat {
         return self.collectionView!.frame.size.width
     }
     
-    func yOffsetOfTicketsOfCollectionView(collectionView: UICollectionView) -> CGFloat {
+    func yOffsetOfTicketsOfCollectionView(_ collectionView: UICollectionView) -> CGFloat {
         return self.collectionView!.frame.size.height*0.05
     }
     
-    func shouldDisplayCell(collectionView: UICollectionView, indexPath: NSIndexPath) -> Bool {
+    func shouldDisplayCell(_ collectionView: UICollectionView, indexPath: IndexPath) -> Bool {
         return self.toDisplay[self.getCurrentEvent(collectionView)]![indexPath.row]
     }
     
-    func getCurrentEvent(collectionView: UICollectionView) -> Int {
+    func getCurrentEvent(_ collectionView: UICollectionView) -> Int {
         return (self.currentEvent)!
     }
 }
 
 class LockedTicketsCollectionViewController: UICollectionViewController {
     
-    private let data : [Int:[String]] = [0:["lockedTicket.png", "moreInfo.png", "lockedTicket2.png", "moreInfo.png"], 1:[]]
+    fileprivate let data : [Int:[String]] = [0:["lockedTicket.png", "moreInfo.png", "lockedTicket2.png", "moreInfo.png"], 1:[]]
     
-    private let stxCodes : [Int:[String]] = [0:["dzg7ui8Jsrs3", "sj7dczUi62id"], 1:[]]
+    fileprivate let stxCodes : [Int:[String]] = [0:["dzg7ui8Jsrs3", "sj7dczUi62id"], 1:[]]
     
-    private var toDisplay : [Int:[Bool]] = [0:[true,false,true,false], 1:[]]
+    fileprivate var toDisplay : [Int:[Bool]] = [0:[true,false,true,false], 1:[]]
     
     var currentEvent : Int!
     
@@ -59,9 +59,9 @@ class LockedTicketsCollectionViewController: UICollectionViewController {
     
     var infoOverView : UIView!
     
-    @IBAction func clickUnlockButton(sender: AnyObject) {
+    @IBAction func clickUnlockButton(_ sender: AnyObject) {
         self.imageContainer.alpha = 1.0
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(3*NSEC_PER_SEC)), dispatch_get_main_queue(),{self.performSegueWithIdentifier("goBackAfterUnlocking", sender: nil)})
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(3*NSEC_PER_SEC)) / Double(NSEC_PER_SEC),execute: {self.performSegue(withIdentifier: "goBackAfterUnlocking", sender: nil)})
     }
     
     override func viewDidLoad() {
@@ -81,9 +81,9 @@ class LockedTicketsCollectionViewController: UICollectionViewController {
         imageContainer.animationImages = imagesArray
         imageContainer.animationDuration = 0.9
         imageContainer.startAnimating()
-        imageContainer.contentMode = UIViewContentMode.ScaleAspectFit
+        imageContainer.contentMode = UIViewContentMode.scaleAspectFit
         self.collectionView!.addSubview(imageContainer)
-        self.collectionView!.bringSubviewToFront(imageContainer)
+        self.collectionView!.bringSubview(toFront: imageContainer)
         imageContainer.alpha = 0.0
         self.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(selectLockedTicket)))
     }
@@ -105,30 +105,30 @@ class LockedTicketsCollectionViewController: UICollectionViewController {
 
     // MARK: UICollectionViewDataSource
 
-    override func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+    override func numberOfSections(in collectionView: UICollectionView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return 1
     }
 
 
-    override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
         return (data[currentEvent]?.count)!
     }
 
-    override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as! LockedTicketsCollectionViewCell
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! LockedTicketsCollectionViewCell
         
         cell.lockedTicketImageView.image = UIImage(named: data[currentEvent]![indexPath.row])!
-        cell.lockedTicketImageView.contentMode = UIViewContentMode.ScaleAspectFit
+        cell.lockedTicketImageView.contentMode = UIViewContentMode.scaleAspectFit
     
         // Configure the cell
     
         return cell
     }
     
-    override func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        if (self.collectionView!.cellForItemAtIndexPath(indexPath) as? LockedTicketsCollectionViewCell) != nil {
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if (self.collectionView!.cellForItem(at: indexPath) as? LockedTicketsCollectionViewCell) != nil {
             if indexPath.row%2==0 {
                 self.toDisplay[self.currentEvent]![indexPath.row+1] = !(self.toDisplay[self.currentEvent]![indexPath.row+1])
                 if let layout = self.collectionView!.collectionViewLayout as? LockedTicketsCollectionViewLayout {
@@ -139,32 +139,32 @@ class LockedTicketsCollectionViewController: UICollectionViewController {
         }
     }
     
-    func selectLockedTicket(sender: UITapGestureRecognizer) {
-        let indexPath : NSIndexPath = self.collectionView!.indexPathForItemAtPoint(sender.locationOfTouch(0, inView: self.collectionView!))!
-        let location = sender.locationOfTouch(0, inView: self.collectionView!)
+    func selectLockedTicket(_ sender: UITapGestureRecognizer) {
+        let indexPath : IndexPath = self.collectionView!.indexPathForItem(at: sender.location(ofTouch: 0, in: self.collectionView!))!
+        let location = sender.location(ofTouch: 0, in: self.collectionView!)
         if indexPath.row%2 == 1 {
-            let cellOrigin = self.collectionView!.cellForItemAtIndexPath(indexPath)!.frame.origin
+            let cellOrigin = self.collectionView!.cellForItem(at: indexPath)!.frame.origin
             let cellWidth = self.widthOfTicketsOfCollectionView(self.collectionView!)
             let cellHeight = self.collectionView(self.collectionView!, heightOfCellAtIndexPath: indexPath)
             if (cellWidth*0.335...cellWidth*0.594 ~= (location.x - cellOrigin.x)) || (cellWidth*0.679...cellWidth*0.937 ~= (location.x - cellOrigin.x)) {
                 if cellHeight*0.71...cellHeight*0.915 ~= (location.y - cellOrigin.y) {
-                    if let vc = storyboard!.instantiateViewControllerWithIdentifier("moreInfoController") as? MoreInfoNavigationController {
+                    if let vc = storyboard!.instantiateViewController(withIdentifier: "moreInfoController") as? MoreInfoNavigationController {
                         vc.reselling = (cellWidth*0.335...cellWidth*0.594 ~= (location.x - cellOrigin.x))
                         vc.handingOver = !vc.reselling
                         vc.delegateController = self
                         vc.stxCode = stxCodes[self.currentEvent]![(indexPath.row-1)/2]
-                        vc.modalPresentationStyle = .OverCurrentContext
-                        let blurEffect = UIBlurEffect(style: UIBlurEffectStyle.Light)
+                        vc.modalPresentationStyle = .overCurrentContext
+                        let blurEffect = UIBlurEffect(style: UIBlurEffectStyle.light)
                         let blurEffectView = UIVisualEffectView(effect: blurEffect)
-                        blurEffectView.frame = UIScreen.mainScreen().bounds
+                        blurEffectView.frame = UIScreen.main.bounds
                         self.view.addSubview(blurEffectView)
-                        self.presentViewController(vc, animated: true, completion: nil)
+                        self.present(vc, animated: true, completion: nil)
                     }
                 }
             }
         }
         else {
-            self.collectionView(self.collectionView!, didSelectItemAtIndexPath: indexPath)
+            self.collectionView(self.collectionView!, didSelectItemAt: indexPath)
         }
     }
 

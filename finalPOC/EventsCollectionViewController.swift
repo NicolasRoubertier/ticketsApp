@@ -13,21 +13,21 @@ private let reuseIdentifier = "eventCellContainer"
 private let eventsArray : [String] = ["semiFinalEvent.png", "finalEvent.png"]
 
 extension EventsCollectionViewController : EventsLayoutDelegate {
-    func collectionView(collectionView: UICollectionView, heightOfCellAtIndexPath indexPath:NSIndexPath) -> CGFloat {
+    func collectionView(_ collectionView: UICollectionView, heightOfCellAtIndexPath indexPath:IndexPath) -> CGFloat {
         let image : UIImage = UIImage(named: eventsArray[indexPath.row])!
         let sizeRate : CGFloat = CGFloat(image.size.width/(self.collectionView!.frame.size.width*0.80))
         return CGFloat((image.size.height)/sizeRate)
     }
     
-    func widthOfTicketsOfCollectionView(collectionView: UICollectionView) -> CGFloat {
+    func widthOfTicketsOfCollectionView(_ collectionView: UICollectionView) -> CGFloat {
         return CGFloat(self.collectionView!.frame.size.width*0.80)
     }
     
-    func xOffsetOfTicketsOfCollectionView(collectionView: UICollectionView) -> CGFloat {
+    func xOffsetOfTicketsOfCollectionView(_ collectionView: UICollectionView) -> CGFloat {
         return CGFloat(self.collectionView!.frame.size.width*0.1)
     }
     
-    func yOffsetOfTicketsOfCollectionView(collectionView: UICollectionView) -> CGFloat {
+    func yOffsetOfTicketsOfCollectionView(_ collectionView: UICollectionView) -> CGFloat {
         return CGFloat(self.collectionView!.frame.size.height*0.08)
     }
     
@@ -69,22 +69,22 @@ class EventsCollectionViewController: UICollectionViewController {
 
     // MARK: UICollectionViewDataSource
 
-    override func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+    override func numberOfSections(in collectionView: UICollectionView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return 1
     }
 
 
-    override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
         return eventsArray.count
     }
 
-    override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as! EventsCollectionViewCell
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! EventsCollectionViewCell
         
         cell.eventCell.image = UIImage(named: eventsArray[indexPath.row])!
-        cell.eventCell.contentMode = UIViewContentMode.ScaleAspectFit
+        cell.eventCell.contentMode = UIViewContentMode.scaleAspectFit
     
         // Configure the cell
     

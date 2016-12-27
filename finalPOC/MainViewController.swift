@@ -14,14 +14,14 @@ class MainViewController: UIViewController {
     
     @IBOutlet weak var accountButton: UIButton!
     
-    @IBAction func pressEventsButton(sender: UIButton) {
+    @IBAction func pressEventsButton(_ sender: UIButton) {
         if !activeEvents {
             performTransitionBetweenViews("left")
             activeEvents = true
         }
     }
     
-    @IBAction func pressAccountButton(sender: UIButton) {
+    @IBAction func pressAccountButton(_ sender: UIButton) {
         if activeEvents {
             performTransitionBetweenViews("right")
             activeEvents = false
@@ -38,15 +38,15 @@ class MainViewController: UIViewController {
     
     var areTicketsLocked : Bool = true
     
-    private var selectedEvent : Int = -1
+    fileprivate var selectedEvent : Int = -1
     
-    private let eventsArray : [String] = ["semiFinalEvent.png", "finalEvent.png"]
+    fileprivate let eventsArray : [String] = ["semiFinalEvent.png", "finalEvent.png"]
     
-    private var possibleY : [[CGFloat]] = [[]]
+    fileprivate var possibleY : [[CGFloat]] = [[]]
     
-    private var hasBeenUnlocked : Bool =  false
+    fileprivate var hasBeenUnlocked : Bool =  false
     
-    @IBAction func unlockTickets(sender: UIStoryboardSegue) {
+    @IBAction func unlockTickets(_ sender: UIStoryboardSegue) {
         self.areTicketsLocked = false
     }
     
@@ -55,16 +55,16 @@ class MainViewController: UIViewController {
         eventsContainer.alpha = 1
         accountContainer.alpha = 0
         self.navigation.title = "Events"
-        eventsButton.setImage(UIImage(named: "selectedEventsButton.png"), forState: .Normal)
-        accountButton.setImage(UIImage(named: "unselectedAccountButton.png"), forState: .Normal)
+        eventsButton.setImage(UIImage(named: "selectedEventsButton.png"), for: UIControlState())
+        accountButton.setImage(UIImage(named: "unselectedAccountButton.png"), for: UIControlState())
         self.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(selectEvent)))
         // Do any additional setup after loading the view.
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         if !hasBeenUnlocked {
             if !areTicketsLocked {
-                performSegueWithIdentifier("showUnlockedTicket", sender: nil)
+                performSegue(withIdentifier: "showUnlockedTicket", sender: nil)
                 hasBeenUnlocked = true
             }
         }
@@ -89,37 +89,37 @@ class MainViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return UIStatusBarStyle.LightContent
+    override var preferredStatusBarStyle : UIStatusBarStyle {
+        return UIStatusBarStyle.lightContent
     }
     
-    func getEventHeight(index : Int) -> CGFloat{
+    func getEventHeight(_ index : Int) -> CGFloat{
         let image = UIImage(named : eventsArray[index])!
         let sizeRate : CGFloat = CGFloat(image.size.width/(self.eventsContainer.frame.size.width*0.80))
         return CGFloat((image.size.height)/sizeRate)
     }
     
-    func performTransitionBetweenViews(side: String) {
+    func performTransitionBetweenViews(_ side: String) {
         if side == "right" {
                 self.eventsContainer.alpha = 0
                 self.accountContainer.alpha = 1
-                self.eventsButton.setImage(UIImage(named: "unselectedEventsButton.png"), forState: .Normal)
-                self.accountButton.setImage(UIImage(named: "selectedAccountButton.png"), forState: .Normal)
+                self.eventsButton.setImage(UIImage(named: "unselectedEventsButton.png"), for: UIControlState())
+                self.accountButton.setImage(UIImage(named: "selectedAccountButton.png"), for: UIControlState())
                 self.navigation.title = "Account"
         }
         
         else {
                 self.eventsContainer.alpha = 1
                 self.accountContainer.alpha = 0
-                self.eventsButton.setImage(UIImage(named: "selectedEventsButton.png"), forState: .Normal)
-                self.accountButton.setImage(UIImage(named: "unselectedAccountButton.png"), forState: .Normal)
+                self.eventsButton.setImage(UIImage(named: "selectedEventsButton.png"), for: UIControlState())
+                self.accountButton.setImage(UIImage(named: "unselectedAccountButton.png"), for: UIControlState())
                 self.navigation.title = "Events"
         }
     }
     
-    func selectEvent(sender: UITapGestureRecognizer) {
+    func selectEvent(_ sender: UITapGestureRecognizer) {
         if activeEvents {
-            let touchedPoint : CGPoint = sender.locationOfTouch(0, inView: self.eventsContainer)
+            let touchedPoint : CGPoint = sender.location(ofTouch: 0, in: self.eventsContainer)
             if self.eventsContainer.frame.size.width*0.1...self.eventsContainer.frame.size.width*0.90 ~= touchedPoint.x {
                 var selectedCellIndex : Int = -1
                 var index = 0
@@ -132,10 +132,10 @@ class MainViewController: UIViewController {
                 if selectedCellIndex >= 0 {
                     self.selectedEvent = selectedCellIndex
                     if(areTicketsLocked) {
-                        performSegueWithIdentifier("eventSelected", sender: nil)
+                        performSegue(withIdentifier: "eventSelected", sender: nil)
                     }
                     else {
-                        performSegueWithIdentifier("showUnlockedTicket", sender: nil)
+                        performSegue(withIdentifier: "showUnlockedTicket", sender: nil)
                     }
                 }
             }
@@ -146,9 +146,9 @@ class MainViewController: UIViewController {
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation*/
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "eventSelected" {
-            if let destinationVC = segue.destinationViewController as? LockedTicketsCollectionViewController {
+            if let destinationVC = segue.destination as? LockedTicketsCollectionViewController {
                 destinationVC.currentEvent = self.selectedEvent
             }
         }

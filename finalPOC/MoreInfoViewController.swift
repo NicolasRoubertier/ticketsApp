@@ -26,9 +26,9 @@ class MoreInfoViewController: UIViewController {
     
     @IBOutlet weak var resaleContainer: UIView!
     
-    @IBAction func closeController(sender: AnyObject) {
+    @IBAction func closeController(_ sender: AnyObject) {
         if delegate.unblurView() {
-            self.dismissViewControllerAnimated(true, completion: nil)
+            self.dismiss(animated: true, completion: nil)
         }
         
     }
@@ -44,17 +44,17 @@ class MoreInfoViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return UIStatusBarStyle.LightContent
+    override var preferredStatusBarStyle : UIStatusBarStyle {
+        return UIStatusBarStyle.lightContent
     }
 
     /*
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation*/
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showSTXCode" {
-            if let destinationVC = segue.destinationViewController as? ResellCodeViewController {
+            if let destinationVC = segue.destination as? ResellCodeViewController {
                 if (self.reselling)! {
                     destinationVC.label = self.stxCode
                 }

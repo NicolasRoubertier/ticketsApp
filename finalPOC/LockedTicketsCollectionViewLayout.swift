@@ -9,23 +9,23 @@
 import UIKit
 
 protocol LockedTicketsLayoutDelegate {
-    func collectionView(collectionView: UICollectionView, heightOfCellAtIndexPath indexPath:NSIndexPath) -> CGFloat
-    func widthOfTicketsOfCollectionView(collectionView: UICollectionView) -> CGFloat
-    func yOffsetOfTicketsOfCollectionView(collectionView: UICollectionView) -> CGFloat
-    func shouldDisplayCell(collectionView: UICollectionView, indexPath: NSIndexPath) -> Bool
-    func getCurrentEvent(collectionView: UICollectionView) -> Int
+    func collectionView(_ collectionView: UICollectionView, heightOfCellAtIndexPath indexPath:IndexPath) -> CGFloat
+    func widthOfTicketsOfCollectionView(_ collectionView: UICollectionView) -> CGFloat
+    func yOffsetOfTicketsOfCollectionView(_ collectionView: UICollectionView) -> CGFloat
+    func shouldDisplayCell(_ collectionView: UICollectionView, indexPath: IndexPath) -> Bool
+    func getCurrentEvent(_ collectionView: UICollectionView) -> Int
 }
 
 class LockedTicketsCollectionViewLayout: UICollectionViewLayout {
     
     var delegate : LockedTicketsLayoutDelegate!
     
-    private var cache = [UICollectionViewLayoutAttributes]()
-    private var contentHeight : CGFloat = 0.0
-    private var contentWidth : CGFloat = 0.0
+    fileprivate var cache = [UICollectionViewLayoutAttributes]()
+    fileprivate var contentHeight : CGFloat = 0.0
+    fileprivate var contentWidth : CGFloat = 0.0
     var isBeingReloaded : Bool = false
     
-    override func prepareLayout() {
+    override func prepare() {
         if cache.isEmpty || isBeingReloaded{
             if(isBeingReloaded) {
                 contentHeight = 0.0
@@ -35,13 +35,13 @@ class LockedTicketsCollectionViewLayout: UICollectionViewLayout {
             }
             let yOffset = delegate.yOffsetOfTicketsOfCollectionView(collectionView!)
             contentHeight += yOffset
-            for item in 0 ..< collectionView!.numberOfItemsInSection(0) {
-                let indexPath : NSIndexPath =  NSIndexPath(forItem: item, inSection: 0)
+            for item in 0 ..< collectionView!.numberOfItems(inSection: 0) {
+                let indexPath : IndexPath =  IndexPath(item: item, section: 0)
                     if delegate.shouldDisplayCell(collectionView!, indexPath: indexPath) {
                         let ticketHeight = delegate.collectionView(collectionView!, heightOfCellAtIndexPath: indexPath)
                         let ticketWidth = delegate.widthOfTicketsOfCollectionView(collectionView!)
                         let frame = CGRect(x: 0, y:contentHeight, width: ticketWidth, height: ticketHeight)
-                        let attributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
+                        let attributes = UICollectionViewLayoutAttributes(forCellWith: indexPath)
                         attributes.frame = frame
                         cache.append(attributes)
                         contentHeight += ticketHeight
@@ -51,18 +51,18 @@ class LockedTicketsCollectionViewLayout: UICollectionViewLayout {
         }
     }
     
-    override func collectionViewContentSize() -> CGSize {
+    override var collectionViewContentSize : CGSize {
         return CGSize(width: contentWidth, height: contentHeight)
     }
     
-    override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
+    override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         return cache[indexPath.item]
     }
     
-    override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+    override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         var layoutAttributes = [UICollectionViewLayoutAttributes]()
         for attributes in cache {
-            if CGRectIntersectsRect(attributes.frame, rect) {
+            if attributes.frame.intersects(rect) {
                 layoutAttributes.append(attributes)
             }
             else {
